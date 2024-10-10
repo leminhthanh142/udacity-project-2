@@ -39,7 +39,13 @@ app.get("/filteredimage", async (req, res) => {
     }
 
     const imagePath = await filterImageFromURL(image_url)
-    return res.status(200).sendFile(imagePath)
+    return res.status(200).sendFile(imagePath, err => {
+      if (err) {
+        res.status(400).message({ message: "Failed to send image" })
+      } else {
+        deleteLocalFiles([imagePath])
+      }
+    })
   } catch (err) {
     res.status(500).send({ message: "Failed to filter image " })
   }
